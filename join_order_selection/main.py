@@ -1,6 +1,5 @@
 import itertools
 import functools
-from warnings import catch_warnings
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -12,16 +11,14 @@ from dwave.system import LeapHybridSampler
 def build_bqm(leaves, internals, root):
 
     non_root_nodes = leaves + internals
-
     non_leaf_nodes = internals + [root]
-
     all_nodes = non_root_nodes + [root]
 
     bqm = dimod.BinaryQuadraticModel({}, {}, 0.0, dimod.BINARY)
 
     # -------- H_A Hamiltonian --------
     # Tree constraint: the join tree needs to have the root which contains the result
-    root_bqm = combinations([root], 1, strength=2)
+    root_bqm = combinations([root], 1, strength=1)
     bqm.update(root_bqm)
 
     # Tree constraint: the join tree needs to have all the single tables as leaves
@@ -50,10 +47,65 @@ def build_bqm(leaves, internals, root):
                     except:
                         bqm.quadratic[key] = 1
 
-    # Tree constraint: every node expect the leaves need to have exactly two children
-    # This constraints means that the number of edges is two times the number of joins
-    binary_bqm = combinations(all_nodes, 2*len(leaves) + 1, strength=1)
-    bqm.update(binary_bqm)
+    # Tree constraint: every node expect the leaves need to have exactly two children i.e. the join is tree is a full binary tree
+    # Unfortunately we need to introduce some auxiliary variables y_ab which is encoded as (a,b) where a -> b which means that b is a substring of a
+    # The opened bqm is (2x - y - z)^2 = 4x + y + z - 4xy - 4xz + 2yz
+
+    for x in non_leaf_nodes:
+        # x = x_v
+        x_set = set([char for char in x])
+
+        # the first linear term 4x
+
+        try:
+            bqm.set_linear(x, bqm.get_linear(x) + 4)
+        except:
+            bqm.set_linear(x, 4)
+
+        for y in non_root_nodes:
+            if y != x:
+                y_set = set([char for char in y])
+                for z in non_root_nodes:
+                    if z != x and z != y:
+                        z_set = set([char for char in z])
+                        if y_set.issubset(x_set) and z_set.issubset(x_set):
+
+                            y_vu_key = (x, y) # y = y_vu
+                            y_vu2_key = (x, z) # z = y_vu2
+
+                            # Linear terms y + z
+                            
+                            try:
+                                bqm.set_linear(y_vu_key, bqm.get_linear(y_vu_key) + 1)
+                            except:
+                                bqm.set_linear(y_vu_key, 1)
+
+                            try:
+                                bqm.set_linear(y_vu2_key, bqm.get_linear(y_vu2_key) + 1)
+                            except:
+                                bqm.set_linear(y_vu2_key, 1)
+
+                            # Quadratic terms i.e. the three last - 4xy - 4xz + 2yz
+
+                            xy_key = (x, y_vu_key)
+                            xz_key = (x, y_vu2_key)
+                            yz_key = (y_vu_key, y_vu2_key)
+
+                            try:
+                                bqm.quadratic[xy_key] = bqm.quadratic[xy_key] - 4
+                            except:
+                                bqm.quadratic[xy_key] = -4
+
+                            try:
+                                bqm.quadratic[xz_key] = bqm.quadratic[xz_key] - 4
+                            except:
+                                bqm.quadratic[xz_key] = -4
+
+                            try:
+                                bqm.quadratic[yz_key] = bqm.quadratic[yz_key] + 2
+                            except:
+                                bqm.quadratic[yz_key] = 2
+
 
     # -------- H_B Hamiltonian --------
     # Cost constraints. The root i.e. the final result cannot be joined with any other table
@@ -68,6 +120,7 @@ def build_bqm(leaves, internals, root):
     print(bqm.linear)
     print()
     print(bqm.quadratic)
+    print()
     return bqm
 
 def nodes_lower_than(x, all_nodes):
@@ -91,7 +144,7 @@ def solve_join_order(bqm):
 
 if __name__ == "__main__":
 
-    tables = ["R", "S", "T", "K"]
+    tables = ["R", "S", "T"]
     table_string = functools.reduce(lambda a, b: a + b, tables, "")
     # The root of the join order plan is the final join of all the tables
     root = table_string
