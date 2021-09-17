@@ -1,0 +1,6 @@
+{
+    "positions": [
+        {"region": "Left", "x1": 0, "y1": 0, "x2": 0, "y2": 3, "allowed_sensors": ["Lidar", "Camera", "Ultrasound", "Radar"]},
+        {"region": "Right", "x1": 2, "y1": 0, "x2": 2, "y2": 3, "allowed_sensors": ["Lidar", "Camera"]}
+    ]
+}

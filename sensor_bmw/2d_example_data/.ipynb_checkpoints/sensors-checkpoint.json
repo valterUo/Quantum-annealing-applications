@@ -1,0 +1,5 @@
+{ "sensors": [ { "id": 1, "type": 1, "view": { "angle": 30, "range": 1 }, "price": 100 },
+    { "id": 2, "type": 2, "view": { "angle": 40, "range": 2 }, "price": 200 },
+    { "id": 3, "type": 3, "view": { "angle": 50, "range": 5 }, "price": 400 },
+    { "id": 4, "type": 1, "view": { "angle": 10, "range": 10 }, "price": 10 },
+    { "id": 5, "type": 2, "view": { "angle": 90, "range": 5 }, "price": 1000 } ] }
