@@ -1,1 +1,1 @@
-# Quantum annealing applications to databases
+# Quantum annealing applications
