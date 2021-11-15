@@ -1,0 +1,22 @@
+{
+    "sensors": [
+        {
+            "id": 1,
+            "type": 1,
+            "view": {
+                "angle": {"horizontal": 10, "vertical": 50},
+                "range": 9
+            },
+            "price": 10
+        },
+        {
+            "id": 2,
+            "type": 2,
+            "view": {
+                "angle": {"horizontal": 10, "vertical": 50},
+                "range": 9
+            },
+            "price": 100
+        }
+    ]
+}
