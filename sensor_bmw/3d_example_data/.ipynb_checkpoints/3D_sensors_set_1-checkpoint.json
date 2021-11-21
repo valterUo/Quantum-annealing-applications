@@ -4,7 +4,7 @@
             "type": 1,
             "view": {
                 "angle": {"horizontal": 10, "vertical": 50},
-                "range": 200
+                "range": 2000
             },
             "price": 100
         },
@@ -13,7 +13,7 @@
             "type": 2,
             "view": {
                 "angle": {"horizontal": 10, "vertical": 50},
-                "range": 500
+                "range": 5000
             },
             "price": 200
         },
@@ -22,7 +22,7 @@
             "type": 3,
             "view": {
                 "angle": {"horizontal": 10, "vertical": 50},
-                "range": 700
+                "range": 7000
             },
             "price": 100
         },
@@ -31,7 +31,7 @@
             "type": 1,
             "view": {
                 "angle": {"horizontal": 10, "vertical": 50},
-                "range": 1000
+                "range": 10000
             },
             "price": 10
         },
@@ -40,7 +40,7 @@
             "type": 2,
             "view": {
                 "angle": {"horizontal": 10, "vertical": 50},
-                "range": 1000
+                "range": 10000
             },
             "price": 100
         }
